@@ -1,26 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #F5F0E8;
+  --black: #0D0D0D;
+  --white: #FFFFFF;
+  --yellow: #FFE500;
+  --pink: #FF3CAC;
+  --blue: #3D5AFE;
+  --green: #00E676;
+  --orange: #FF6B00;
+  --shadow: 4px 4px 0px #0D0D0D;
+  --shadow-lg: 6px 6px 0px #0D0D0D;
+  --shadow-xl: 8px 8px 0px #0D0D0D;
+  --border: 2.5px solid #0D0D0D;
+  --border-thick: 3.5px solid #0D0D0D;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--black);
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Neobrutalism base card */
+.neo-card {
+  background: var(--white);
+  border: var(--border-thick);
+  border-radius: 4px;
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-card-yellow {
+  background: var(--yellow);
+  border: var(--border-thick);
+  border-radius: 4px;
+  box-shadow: var(--shadow-lg);
+}
+
+.neo-btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  border: var(--border-thick);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: all 0.08s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.neo-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #0D0D0D;
+}
+
+.neo-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #0D0D0D;
+}
+
+.neo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 2px 2px 0px #0D0D0D;
+}
+
+.neo-btn-primary {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.neo-btn-pink {
+  background: var(--pink);
+  color: var(--white);
+}
+
+.neo-btn-blue {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.neo-btn-green {
+  background: var(--green);
+  color: var(--black);
+}
+
+.neo-btn-black {
+  background: var(--black);
+  color: var(--white);
+}
+
+.neo-btn-orange {
+  background: var(--orange);
+  color: var(--white);
+}
+
+/* Frame selector grid item */
+.frame-item {
+  background: #F0EBE0;
+  border: 2.5px solid #0D0D0D;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.08s ease;
+  box-shadow: 3px 3px 0px #0D0D0D;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.frame-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px #0D0D0D;
+  background: #FFF8E1;
+}
+
+.frame-item.selected {
+  background: var(--pink);
+  border-color: #0D0D0D;
+  box-shadow: 5px 5px 0px #0D0D0D;
+  transform: translate(-1px, -1px);
+}
+
+.frame-item.selected .frame-label {
+  color: #fff;
+}
+
+/* Modal overlay */
+.neo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,13,0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.neo-modal {
+  background: var(--white);
+  border: 3.5px solid #0D0D0D;
+  border-radius: 4px;
+  box-shadow: 10px 10px 0px #0D0D0D;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Countdown */
+@keyframes countPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.countdown-number {
+  animation: countPulse 0.6s ease-in-out;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Flash animation */
+@keyframes flashAnim {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.flash-overlay {
+  animation: flashAnim 0.25s ease-out forwards;
+}
+
+/* Captured photo strip */
+.photo-strip-item {
+  border: 2.5px solid #0D0D0D;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0px #0D0D0D;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #F5F0E8; }
+::-webkit-scrollbar-thumb { background: #0D0D0D; border-radius: 2px; }
+
+/* Tag badge */
+.neo-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  border: 2px solid #0D0D0D;
+  border-radius: 2px;
+  padding: 2px 8px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Marquee strip */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-inner {
+  display: flex;
+  gap: 0;
+  animation: marquee 14s linear infinite;
+  width: max-content;
 }

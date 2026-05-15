@@ -1,52 +1,65 @@
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
-import { PassThrough } from 'stream';
+import { Readable } from 'stream';
 
 export async function POST(request: NextRequest) {
   try {
-    const formData = await request.formData();
-    const file = formData.get('photo') as File | null;
+    const { photo, width, height, timestamp } = await request.json();
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    if (!photo) {
+      return NextResponse.json({ error: 'No photo data' }, { status: 400 });
     }
 
-    // convert file → buffer
-    const buffer = Buffer.from(await file.arrayBuffer());
+    console.log('📸 Photo received:', width, 'x', height);
 
-    // buffer → stream (WAJIB pakai PassThrough)
-    const stream = new PassThrough();
-    stream.end(buffer);
+    // Extract base64 data
+    const base64Data = photo.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    
+    const fileSizeMB = (buffer.length / 1024 / 1024).toFixed(2);
+    console.log('💾 Buffer size:', fileSizeMB, 'MB');
 
+    // Convert buffer to stream
+    const stream = Readable.from(buffer);
+
+    // Google Drive authentication
     const auth = new google.auth.GoogleAuth({
       keyFile: process.cwd() + '/credentials.json',
       scopes: ['https://www.googleapis.com/auth/drive'],
     });
 
     const drive = google.drive({ version: 'v3', auth });
-
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID!;
-    const fileName = `photo-${Date.now()}.jpg`;
+    
+    const fileName = `vokasi-${timestamp || Date.now()}.png`;
 
+    console.log('⬆️ Uploading to Google Drive:', fileName);
+
+    // Upload to Google Drive
     const upload = await drive.files.create({
       requestBody: {
         name: fileName,
         parents: [folderId],
+        description: `Photo captured at ${width}x${height} resolution`,
       },
       media: {
-        mimeType: 'image/jpeg',
-        body: stream, // ✅ FIX UTAMA
+        mimeType: 'image/png',
+        body: stream,
       },
-      supportsAllDrives: true, // wajib untuk Shared Drive
+      supportsAllDrives: true,
     });
+
+    console.log('✅ Upload success:', fileName, 'ID:', upload.data.id);
 
     return NextResponse.json({
       success: true,
       fileId: upload.data.id,
       fileName,
+      fileSize: fileSizeMB + ' MB',
+      resolution: `${width}x${height}`,
     });
   } catch (err) {
-    console.error('UPLOAD ERROR:', err);
+    console.error('❌ UPLOAD ERROR:', err);
     return NextResponse.json(
       { success: false, error: String(err) },
       { status: 500 }

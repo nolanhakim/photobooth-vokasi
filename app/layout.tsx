@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Vokasi Photobooth",
-  description: "Photobooth for Vokasi students",
+  title: "Nul Photobooth",
+  description: "Nul Photobooth",
 };
 
 export default function RootLayout({
